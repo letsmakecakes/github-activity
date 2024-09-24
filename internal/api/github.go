@@ -2,6 +2,8 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/letsmakecakes/github-activity/internal/model"
@@ -23,18 +25,34 @@ func NewResponse() *Response {
 	return &Response{}
 }
 
-func (req Request) SendClientRequest() (*http.Response, error) {
-	resp, err := http.Get(req.URL)
+func (r Request) SendClientRequest() (*http.Response, error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequest(http.MethodGet, r.URL, nil)
 	if err != nil {
 		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("error: status code %d", resp.StatusCode)
 	}
 
 	return resp, nil
 }
 
 func (respObj *Response) GetEvents(resp *http.Response) error {
-	err := json.NewDecoder(resp.Body).Decode(&respObj.Event)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
+		return err
+	}
+
+	if err = json.Unmarshal(body, &respObj.Event); err != nil {
 		return err
 	}
 
