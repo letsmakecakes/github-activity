@@ -1,110 +1,129 @@
 # GitHub Activity CLI
 
-A simple command-line tool to fetch and display a GitHub user's recent activity using the [GitHub API](https://docs.github.com/en/rest/reference/activity). This project helps you practice working with APIs, handling JSON data, and building a CLI in Go.
+A simple command-line interface tool that fetches and displays GitHub user activity using the GitHub API.
 
 ## Features
 
-- Fetches and displays the recent activity of a GitHub user in the terminal.
-- CLI accepts the GitHub username as an argument.
-- Handles errors gracefully, including invalid usernames or API failures.
-- (Optional) Caching mechanism to improve performance.
+- Fetch recent GitHub activity for any user
+- Display activity in a clean, readable format
+- Support for multiple event types:
+   - Push events (with commit counts)
+   - Issue events (opened/closed)
+   - Watch events (starring repositories)
+- Built with pure Go - no external dependencies
+- Error handling for API failures and invalid usernames
+- Clean and maintainable codebase structure
 
-## Getting Started
+## Installation
 
 ### Prerequisites
 
-- Go 1.18+
-- GitHub API token (if needed for higher rate limits)
+- Go 1.21 or higher
+- Git
 
-### Installation
+### Building from Source
 
-1. Clone the repository:
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/github-activity.git
+cd github-activity
+```
 
-   ```bash
-   git clone https://github.com/<your-username>/github-activity-cli.git
-   cd github-activity-cli
-   ```
+2. Build the project
+```bash
+go build -o github-activity cmd/github-activity/main.go
+```
 
-2. Install the necessary dependencies:
+3. (Optional) Add to PATH
+```bash
+# On Unix-like systems
+sudo mv github-activity /usr/local/bin/
+```
 
-   ```bash
-   go mod tidy
-   ```
+## Usage
 
-3. Build the CLI tool:
+```bash
+github-activity <username>
+```
 
-   ```bash
-   go build -o github-activity ./cmd/github-activity
-   ```
-
-### Usage
-
-1. Run the tool by passing a GitHub username as an argument:
-
-   ```bash
-   ./github-activity <username>
-   ```
-
-   Example:
-
-   ```bash
-   ./github-activity kamranahmedse
-   ```
-
-   This will display the recent public activity of the specified user, like:
-
-   ```
-   - Pushed 3 commits to kamranahmedse/developer-roadmap
-   - Opened a new issue in kamranahmedse/developer-roadmap
-   - Starred kamranahmedse/developer-roadmap
-   ```
-
-### Error Handling
-
-The tool will gracefully handle common errors like:
-
-- Invalid GitHub usernames
-- Network issues or GitHub API failures
-- Rate-limiting by the GitHub API
-
-In case of errors, appropriate messages will be displayed in the terminal.
-
-### Optional: Caching
-
-You can enable caching to store the fetched activity data temporarily, reducing redundant API calls for the same user.
+Example:
+```bash
+$ github-activity kamranahmedse
+- Pushed 3 commits to kamranahmedse/developer-roadmap
+- Opened an issue in kamranahmedse/developer-roadmap
+- Starred kamranahmedse/developer-roadmap
+```
 
 ## Project Structure
 
-```bash
-github-activity-cli/
+```
+github-activity/
 ├── cmd/
 │   └── github-activity/
-│       └── main.go                # CLI entry point
+│       └── main.go           # Application entry point
 ├── internal/
 │   ├── api/
-│   │   └── github.go              # GitHub API requests
-│   └── model/
-│       └── event.go               # Data model for GitHub events
-├── pkg/
-│   └── cli/
-│       └── cli.go                 # CLI utilities or reusable logic
-├── go.mod                         # Go module dependencies
-├── go.sum                         # Go module checksums
-└── README.md                      # Project documentation
+│   │   └── github.go         # GitHub API client
+│   ├── models/
+│   │   └── event.go         # Data structures
+│   └── formatter/
+│       └── output.go        # Output formatting logic
+├── go.mod
+└── README.md
 ```
 
-## API Reference
+## Error Handling
 
-This tool uses the following GitHub API endpoint to fetch user activity:
+The tool handles various error cases:
 
+- Invalid GitHub usernames
+- API rate limiting
+- Network connectivity issues
+- Malformed API responses
+
+Example error output:
+```bash
+$ github-activity invalid@user
+Error fetching events: GitHub API error: 404 Not Found - {"message": "Not Found"}
 ```
-GET https://api.github.com/users/<username>/events
-```
 
-For more details on the GitHub API, see the [official documentation](https://docs.github.com/en/rest/reference/activity).
+## Contributing
 
-## Future Enhancements
+Contributions are welcome! Here are some ways you can contribute:
 
-- **Filtering by event type**: Filter events such as push, issue creation, starring, etc.
-- **Structured output**: Display activity in a more organized or structured format.
-- **Additional API endpoints**: Fetch more user-related data, like repositories, followers, etc.
+1. Report bugs
+2. Suggest new features
+3. Submit pull requests
+
+### Development Setup
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Possible Enhancements
+
+- [ ] Add authentication support for higher API rate limits
+- [ ] Implement event filtering by type
+- [ ] Add caching for better performance
+- [ ] Support more event types
+- [ ] Add pagination support
+- [ ] Include colorized output
+- [ ] Add detailed event information
+- [ ] Support custom date ranges
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- GitHub API Documentation
+- Go standard library
+- The open-source community
+
+## Support
+
+If you encounter any problems or have suggestions, please open an issue in the GitHub repository.
